@@ -6,26 +6,28 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/minify_html-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace('-', '_')}}-{{ version }}.tar.gz
   sha256: 43998530ef537701f003a8e908b756d78eff303c86b041a95855e290518ba79c
 
 build:
   script_env:
     - PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: 
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+    - cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
   number: 0
 
 requirements:
   build:
     - python
-    - {{ stdlib("c") }}
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
+    - pip
     - python
     - maturin >=0.13
-    - pip
   run:
     - python
 
@@ -41,7 +43,14 @@ about:
   home: https://github.com/wilsonzlin/minify-html
   summary: Extremely fast and smart HTML + JS + CSS minifier
   license: MIT
-  license_file: minify-html/LICENSE
+  license_family: MIT
+  license_file: 
+    - minify-html/LICENSE
+    - THIRDPARTY.yml
+  description: |
+    A Rust HTML minifier meticulously optimised for speed and effectiveness, with bindings for other languages.
+  doc_url: https://github.com/wilsonzlin/minify-html/blob/master/README.md
+  dev_url: https://github.com/wilsonzlin/minify-html
 
 extra:
   recipe-maintainers:
